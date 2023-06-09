@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>CafeSUS</title>
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/responsive.css">
+
+</head>
+
+<script>
+
+	var min = 100000;
+	var max = 900000;
+
+	var elementos = [];
+	var cant = 0;
+	var tot = 0;
+	var das = 0;
+
+
+	window.addEventListener('DOMContentLoaded', function () {
+		var elementosGuardados = localStorage.getItem('elementos');
+		if (elementosGuardados) {
+			elementos = JSON.parse(elementosGuardados);
+			mostrarElementosGuardados();
+		}
+	});
+
+	function agregar() {
+		var nombre = document.getElementById('nombre').value;
+		var precio = parseFloat(document.getElementById('precio').value);
+		var cantidad = parseFloat(document.getElementById('cantidad').value);
+
+		var total = precio * cantidad;
+		das = das + cantidad;
+		elementos.push(
+			{
+				"id": cant,
+				"nombre": nombre,
+				"precio": precio,
+				"cantidad": cantidad,
+				"total": total
+			}
+		);
+		var id_row = 'row' + cant;
+		var fila = '<tr id=' + id_row + '><td>' + nombre + '</td><td>' + precio + '</td><td>' + cantidad + '</td><td>' + total + '</td><td><a href="#" class="btn btn-danger" onclick="eliminar(' + cant + ')";>Eliminar</a><a href="#" class="btn btn-warning" onclick="cantidad(' + cant + ')";>Cantidad</a></td></tr>'
+		$("#lista").append(fila);
+		$("#nombre").val('');
+		$("#precio").val('');
+		$("#cantidad").val('');
+		$("#nombre").focus();
+		cant++;
+
+		sumar();
+	}
+
+	const  generateRandomString = (num) => {
+    const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result1= ' ';
+    const charactersLength = characters.length;
+    for ( let i = 0; i < num; i++ ) {
+        result1 += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result1;
+}
+
+	function mandar() {
+		let nom = generateRandomString(7);
+		let fol = generateRandomString(15);
+		let total = tot;
+		let canti = das;
+
+		axios.post("https://proyectorest-production.up.railway.app/inventario", {
+			nombre: nom,
+			folio: fol,
+			total: tot,
+			cantidad: das
+		})
+			.then(function (response) {
+				swal("Realizado", "", "");
+				window.open("../cafeteria/menu.html", "_self")
+			})
+			.catch(function (error) {
+				console.log(error);
+				swal(error, "", "");
+			})
+	}
+
+	function sumar() {
+		for (x of elementos) {
+			tot = tot + x.total;
+		}
+		document.getElementById("total").innerHTML = "Total= " + tot;
+	}
+	function dato() {
+		for (x of elementos) {
+			das = das + x.cantidad;
+		}
+	}
+	function eliminar(row) {
+		$("#row" + row).remove();
+		var i = 0;
+		var pos = 0;
+
+		for (x of elementos) {
+			if (x.id == row) {
+				pos = i;
+			}
+			i++;
+		}
+		elementos.splice(pos, 1);
+		sumar();
+	}
+	function cantidad(row) {
+		var canti = parseFloat(prompt("Cantidad Nueva de Productos"));
+		elementos[row].cantidad = canti;
+		elementos[row].total = elementos[row].cantidad * elementos[row].precio;
+		var filaid = document.getElementById("row" + row);
+		celda = filaid.getElementsByTagName('td');
+		celda[2].innerHTML = canti;
+		celda[3].innerHTML = elementos[row].total;
+		sumar();
+	}
+</script>
+
+<body>
+	<!-- Aquí esta el header -->
+	<header class="top-navbar">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<div class="container">
+				<a class="navbar-brand" href="../index.html">
+					<img src="images/logo.png" alt="" />
+				</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars-rs-food"
+					aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbars-rs-food">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item"><a class="nav-link" href="../index.html">Inicio</a></li>
+						<li class="nav-item active"><a class="nav-link" href="menu.html">Menu</a></li>
+
+						<li class="nav-item"><a class="nav-link" href=""></a></li>
+
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+
+	<div class="all-page-title page-breadcrumb">
+		<div class="container text-center">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1>Prueba Nuestros Menús</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--Aquí esta el Menú -->
+	<div class="menu-box">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="heading-title text-center">
+						<h2>Bienvenido</h2>
+						<p>Observa lo que ofrecemos para ti te ofrecemos </p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row inner-menu-box">
+				<div class="col-3">
+					<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+						<a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home"
+							role="tab" aria-controls="v-pills-home" aria-selected="true">Todo</a>
+						<a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile"
+							role="tab" aria-controls="v-pills-profile" aria-selected="false">Bebidas</a>
+						<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages"
+							role="tab" aria-controls="v-pills-messages" aria-selected="false">Almuerzos</a>
+						<a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings"
+							role="tab" aria-controls="v-pills-settings" aria-selected="false">Combos y más</a>
+					</div>
+				</div>
+
+				<div class="col-9">
+					<div class="tab-content" id="v-pills-tabContent">
+						<div class="tab-pane fade show active" id="v-pills-home" aria-labelledby="v-pills-home-tab">
+							<div class="row">
+								<div class="col-lg-4 col-md-6 special-grid drinks">
+									<div class="gallery-single fix">
+										<img src="images/img-01.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Cáfes y también cáfes tematicos</h4>
+											<p>Variedad y sabor, todo de calidad y para su deleite, escoje el que mas te
+												guste <br></p>
+											<h5> $35-$90</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid drinks">
+									<div class="gallery-single fix">
+										<img src="images/img-02.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4 id="t1">Cáfes especiales</h4>
+											<p>Para el público más exigente y con un buen sabor y deleite</p>
+											<h5 id="t2">$50-$100</h5>
+										</div>
+
+									</div>
+								</div>
+
+								<!-- ******************************** -->
+
+
+								<div class="col-lg-4 col-md-6 special-grid drinks">
+									<div class="gallery-single fix">
+										<img src="images/img-03.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Más bebidas</h4>
+											<p>También tenemos gran variedad de bebidas</p>
+											<h5> $10-$80</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid lunch">
+									<div class="gallery-single fix">
+										<img src="images/img-04.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4 id="t1">Simpre Fat nunca Fit</h4>
+											<p>Ofrecemos tambien un gran cantidad de comidas para todo</p>
+											<h5 id="t2"> $50-$150</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid lunch">
+									<div class="gallery-single fix">
+										<img src="images/img-05.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Nunca Fat simpre Fit</h4>
+											<p>Aquí también ofrecemos una variedad de alimentos saludables para todos
+											</p>
+											<h5> $35-$200</h5>
+										</div>
+									</div>
+								</div>
+
+
+								<div class="col-lg-4 col-md-6 special-grid lunch">
+									<div class="gallery-single fix">
+										<img src="images/img-06.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Desayunos y comidas</h4>
+											<p>Ofrecemos comidas para los más pequeños así tambien desayunos y alimentos
+												variados</p>
+											<h5> $35-$125</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid dinner">
+									<div class="gallery-single fix">
+										<img src="images/img-07.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Combo Desayuno</h4>
+											<p>Ofecemos combos de desayunos<br> De las 9:00 am a las 12:00 pm</p>
+											<h5> $55-$80</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid dinner">
+									<div class="gallery-single fix">
+										<img src="images/img-08.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Combo comidas</h4>
+											<p>Ofecemos combos de comidas<br> De la 13:00 pm a las 17:00 pm</p>
+											<h5> $60-$100</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid dinner">
+									<div class="gallery-single fix">
+										<img src="images/img-09.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Combo cenas </h4>
+											<p>Ofecemos combos de cenas<br> De la 18:00 pm a las 20:00 pm</p>
+											<h5> $45-$80</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+
+						<div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+							aria-labelledby="v-pills-profile-tab">
+							<div class="row">
+								<div class="col-lg-4 col-md-6 special-grid drinks">
+									<div class="gallery-single fix">
+										<img src="images/img-01.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Cáfes y también cáfes tematicos</h4>
+											<p>Variedad y sabor, todo de calidad y para su deliete, escoje el que mas te
+												guste <br></p>
+											<h5> $35-$90</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid drinks">
+									<div class="gallery-single fix">
+										<img src="images/img-02.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Cáfes especiales</h4>
+											<p>Para el publico mas exigente y con un buen sabor y deleite</p>
+											<h5> $50-$100</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid drinks">
+									<div class="gallery-single fix">
+										<img src="images/img-03.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Más bebidas</h4>
+											<p>También tenemos gran variedad de bebidas</p>
+											<h5> $10-$80</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+
+						<div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+							aria-labelledby="v-pills-messages-tab">
+							<div class="row">
+								<div class="col-lg-4 col-md-6 special-grid lunch">
+									<div class="gallery-single fix">
+										<img src="images/img-04.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Simpre Fat nunca Fit</h4>
+											<p>Ofrecemos tambien un gran cantidad de comidas para todo p</p>
+											<h5> $50-$150</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid lunch">
+									<div class="gallery-single fix">
+										<img src="images/img-05.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Nunca Fat simpre Fit</h4>
+											<p>Aquí también ofrecemos una variedad de alimentos saludables para todos
+											</p>
+											<h5> $35-$200</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid lunch">
+									<div class="gallery-single fix">
+										<img src="images/img-06.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Desayunos y comidas</h4>
+											<p>Tenemos comidas para los más pequeños así tambien desayunos y alimentos
+												variados</p>
+											<h5> $35-$125</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="tab-pane fade" id="v-pills-settings" role="tabpanel"
+							aria-labelledby="v-pills-settings-tab">
+							<div class="row">
+								<div class="col-lg-4 col-md-6 special-grid dinner">
+									<div class="gallery-single fix">
+										<img src="images/img-07.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Combo Desayuno</h4>
+											<p>Ofecemos combos de desayunos<br> De las 9 am a las 12pm</p>
+											<h5> $55-$80</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid dinner">
+									<div class="gallery-single fix">
+										<img src="images/img-08.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Combo comidas</h4>
+											<p>Ofecemos combos de comidas<br> De la 1 pm a las 5mp</p>
+											<h5> $60-$100</h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-lg-4 col-md-6 special-grid dinner">
+									<div class="gallery-single fix">
+										<img src="images/img-09.jpg" class="img-fluid" alt="Image">
+										<div class="formatotexto">
+											<h4>Combo cenas </h4>
+											<p>Ofecemos combos de cenas<br> De la 6 pm a las 9mp</p>
+											<h5> $45-$80</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="menu-box">
+		<div class="container">
+			<div class="col-md-6">
+				<h3>Pedidos "CafeSuS"</h3>
+				<div class="col-md-12">
+					<div class="form-group">
+						<select class="custom-select d-block form-control" id="nombre" required
+							onchange="actualizarSelect2()">
+							<option disabled selected>Menu:</option>
+							<option value="Cafe Original">Cafe Original</option>
+							<option value="Cafe Tematico">Cafe Tematico</option>
+							<option value="Cafe Especial">Cafe Especial</option>
+							<option value="Batido de Chocolate">Batido de Chocolate</option>
+							<option value="Batido de Fresa">Batido de Fresa</option>
+							<option value="Refresco">Refresco</option>
+							<option value="Agua de Sabor">Agua de Sabor</option>
+							<option value="Desayuno SuS">Desayuno SuS"</option>
+							<option value="Comida SuS">Comida SuS"</option>
+							<option value="Cena SuS">Cena SuS"</option>
+							<option value="Combo: 'Siempre Fat nunca fit'">Combo: "Siempre Fat nunca fit"</option>
+							<option value="Combo: 'Nunca Fat Siempre fit'">Combo: "Nunca Fat Siempre fit"</option>
+							<option value="Combo: 'Desayuno' ">Combo: "Desayuno"</option>
+							<option value="Combo: 'Comida' ">Combo: "Comida"</option>
+							<option value="Combo: 'Cena' ">Combo: "Cena"</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="col-md-12">
+					<div class="form-group">
+						<select class="custom-select d-block form-control" id="cantidad" required>
+							<option disabled selected>cantidad</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="col-md-12">
+					<div class="form-group">
+						<div class="col-md-12">
+							<div class="form-group">
+								<select class="custom-select d-block form-control" id="precio" required>
+
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<script>
+					function actualizarSelect2() {
+						// Obtener el valor seleccionado en el primer select
+						var valorSelect1 = document.getElementById("nombre").value;
+
+						// Obtener la referencia al segundo select
+						var select2 = document.getElementById("precio");
+
+						// Limpiar las opciones actuales del segundo select
+						select2.innerHTML = "";
+
+						// Agregar opciones al segundo select según el valor seleccionado en el primero
+						if (valorSelect1 === "Cafe Original") {
+							select2.add(new Option("35", "35"));
+						} else if (valorSelect1 === "Cafe Tematico") {
+							select2.add(new Option("50", "50"));
+						} else if (valorSelect1 === "Cafe Especial") {
+							select2.add(new Option("80", "80"));
+						} else if (valorSelect1 === "Batido de Chocolate") {
+							select2.add(new Option("80", "80"));
+						} else if (valorSelect1 === "Batido de Fresa") {
+							select2.add(new Option("80", "80"));
+						} else if (valorSelect1 === "Refresco") {
+							select2.add(new Option("30", "30"));
+						} else if (valorSelect1 === "Agua de Sabor") {
+							select2.add(new Option("20", "20"));
+						} else if (valorSelect1 === "Desayuno SuS") {
+							select2.add(new Option("60", "60"));
+						} else if (valorSelect1 === "Comida SuS") {
+							select2.add(new Option("125", "125"));
+						} else if (valorSelect1 === "Cena SuS") {
+							select2.add(new Option("80", "80"));
+						} else if (valorSelect1 === "Combo: 'Siempre Fat nunca fit'") {
+							select2.add(new Option("150", "150"));
+						} else if (valorSelect1 === "Combo: 'Nunca Fat Siempre fit'") {
+							select2.add(new Option("130", "130"));
+						} else if (valorSelect1 === "Combo: 'Desayuno' ") {
+							select2.add(new Option("70", "70"));
+						} else if (valorSelect1 === "Combo: 'Comida' ") {
+							select2.add(new Option("60", "60"));
+						} else if (valorSelect1 === "Combo: 'Cena' ") {
+							select2.add(new Option("45", "45"));
+						}
+
+					}
+				</script>
+
+				<button type="button" class="btn btn-success" id="agregar" onclick="agregar()">Agregar</button>
+				<button type="button" title="enviar" name="enviar" class="btn btn-success" id="pedir"
+					onclick="mandar()">Pedir</button>
+
+			</div>
+
+			<div class="col-10 mt-3" id="productos">
+				<table class="table table-striped" id="lista">
+					<tr>
+						<!-- <td>Id</td> -->
+						<td>Nombre</td>
+						<td>Precio</td>
+						<td>Cantidad</td>
+						<td>Total</td>
+						<td>Accion</td>
+					</tr>
+				</table>
+				<div class="col-3 text-right" id="total"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- abajo -->
+	<div class="qt-box qt-background">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-9 ml-auto mr-auto text-center">
+					<p class="lead ">
+						" Que el impostor no te agarre dormido <br> Toma cáfeSUS "
+					</p>
+					<span class="lead">TURU TURU TURU TU. . . TURUTU <br>PAN, PAN <br> </span>
+				</div>
+
+			</div><br>
+			<div class="text-center"><a class="btn btn-lg btn-circle btn-outline-new-white"
+					href="inicio de sesion/login.html">Ordena YA!</a></div>
+		</div>
+	</div>
+
+
+
+	<footer class="bg-dark text-center text-white">
+		<div class="container p-4">
+			<section class="mb-4">
+				<p>
+					Gracias por contar con CafeSuS<br>
+					Recuerda siempre estar antes que el impostar<br>
+					Para dudas, recomendaciones, reclamos y o sugerencias, favor de contactar a example@outlook.es
+				</p>
+			</section>
+		</div>
+		<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">All Rights Reserved. &copy; 2022
+			<a class="text-white" href="">CafeSuS.com</a>
+		</div>
+	</footer>
+
+
+	<a href="#" id="back-to-top" title="Back to top" style="display: none;"><i class="fa fa-paper-plane-o"
+			aria-hidden="true"></i></a>
+
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+
+	<script src="js/jquery.superslides.min.js"></script>
+	<script src="js/images-loded.min.js"></script>
+	<script src="js/baguetteBox.min.js"></script>
+	<script src="js/contact-form-script.js"></script>
+	<script src="js/custom.js"></script>
+</body>
+
+</html>
