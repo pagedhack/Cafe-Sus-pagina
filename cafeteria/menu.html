@@ -34,12 +34,13 @@
 	var tot = 0;
 	var das = 0;
 
+	let cuenta = [];
 
 	window.addEventListener('DOMContentLoaded', function () {
 		var elementosGuardados = localStorage.getItem('elementos');
 		if (elementosGuardados) {
 			elementos = JSON.parse(elementosGuardados);
-			mostrarElementosGuardados();
+			mostrarElementosGuardaFdos();
 		}
 	});
 
@@ -69,21 +70,28 @@
 		cant++;
 
 		sumar();
+
+		cuenta.push(nombre);
 	}
 
-	const  generateRandomString = (num) => {
-    const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result1= ' ';
-    const charactersLength = characters.length;
-    for ( let i = 0; i < num; i++ ) {
-        result1 += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
+	const generateRandomString = (num) => {
+		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		let result1 = ' ';
+		const charactersLength = characters.length;
+		for (let i = 0; i < num; i++) {
+			result1 += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
 
-    return result1;
-}
+		return result1;
+	}
 
 	function mandar() {
-		let nom = generateRandomString(7);
+		let nom = "";
+
+		for (let i = 0; i < cuenta.length; i++) {
+			nom += cuenta[i] + ", ";
+		}
+		console.log(nom);
 		let fol = generateRandomString(15);
 		let total = tot;
 		let canti = das;
